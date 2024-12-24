@@ -9,7 +9,7 @@ const port = process.env.PORT || 8080;
 
 // CORS configuration
 app.use(cors({
-  origin: 'http://localhost:3000', // Specify exact origin of your React app
+  origin: 'https://editor-court-craft-application.vercel.app', // Specify exact origin of your React app
   credentials: true // Allow credentials
 }));
 
