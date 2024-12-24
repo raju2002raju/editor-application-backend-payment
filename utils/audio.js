@@ -16,22 +16,28 @@ const getApiKey = () => {
     throw new Error(`API key file "${keyFilePath}" is missing or invalid.`);
 };
 
+const getPromptUpdate = () => {
+    const keyFilePath = path.resolve(__dirname, '../Routes/updateprompt.json');
+    if (fs.existsSync(keyFilePath)) {
+        const data = JSON.parse(fs.readFileSync(keyFilePath, 'utf-8'));
+        if (data.prompt) {
+            return data.prompt;
+        }
+        throw new Error('Prompt is missing in the file.');
+    }
+    throw new Error(`Prompt file "${keyFilePath}" is missing or invalid.`);
+};
+
 async function getChatCompletion(transcript, templateText = '') {
     try {
         const apiKey = getApiKey(); // Ensure getApiKey returns a valid API key
+        const promptTemlpate = getPromptUpdate();
         // const apiKey = process.env.OPENAI_API_KEY;
 
         const messages = [
             {
                 role: 'system',
-                content: `"Rephrase the provided natural language input into a sophisticated and professional legal writing style suitable for drafting legal pleadings. The output must reflect a formal, authoritative tone with appropriate use of legal terminology and structured language. Employ phrases such as 'It is respectfully submitted that,' 'During the course of the proceedings,' and 'These materials formed the basis for,' to ensure the output aligns with the style and structure of formal legal documents in Indian courts. Preserve the original meaning and context without adding or omitting any details."
-        Example Outputs:
-        Output:
-        "It is respectfully submitted that in the year 2019, a trial was conducted before the Hon’ble Special Court of TADA in Bombay in connection with the Bombay blasts. During the course of the proceedings, substantial evidence was presented before the Hon’ble Court, including telephonic records of conversations, crucial documents obtained during the police investigation, and testimony from multiple witnesses. These evidentiary materials, collected and submitted by the investigating authorities, formed the basis for the commencement of the trial before the Hon’ble Court."
-        Output:
-        "That in the year 2020, the petitioner filed the present case before the Hon’ble Court in Delhi, alleging that the respondent had failed to fulfill the terms and conditions of the contract. During the proceedings, the petitioner presented substantial evidence, including emails and messages exchanged between the parties, along with bank statements corroborating the petitioner’s claims. These documents were relied upon to substantiate the allegations made before the Hon’ble Court."
-        Output:
-        "It is further submitted that the FIR lodged in the present matter states that the accused had taken a substantial amount of money under the pretext of securing employment for the victims but failed to deliver on the promise. The investigating authorities recorded the statements of several victims and submitted the same as evidence before the Hon’ble Court, forming the basis of the proceedings against the accused."
+                content: `${promptTemlpate}
         Your Secondary Task :
         You are a legal case text transformer that updates templates using user-provided instructions. Your task is to:
 
